@@ -3,7 +3,7 @@ from mcp.server.fastmcp import FastMCP
 from ...config.logger import logger
 from ...db_client.database_conn import DatabaseConnection
 
-db = DatabaseConnection._instance
+db = DatabaseConnection()
 
 class Resources:
     def registry(self, mcp: FastMCP):

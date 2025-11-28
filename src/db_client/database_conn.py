@@ -7,9 +7,10 @@ from ..config.logger import logger
 # Database Connection
 # ------------------------------------------------------------------------------
 
+ABSOLUTE_PATH: str | None = os.getenv("DATABASE_ABSOLUTE_PATH", None)
 ROOT_PATH = os.getcwd()
 RELATIVE_PATH = "database/sample.db"
-DB_PATH = os.path.join(ROOT_PATH, RELATIVE_PATH)
+DB_PATH = ABSOLUTE_PATH if ABSOLUTE_PATH else os.path.join(ROOT_PATH, RELATIVE_PATH)
 
 
 # SINGLETON

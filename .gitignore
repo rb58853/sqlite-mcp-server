@@ -9,3 +9,4 @@ log/*
 
 # Database
 database/data/*
+.env
