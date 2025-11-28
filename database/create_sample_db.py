@@ -2,7 +2,7 @@ import os
 import sqlite3
 
 ROOT_PATH = os.getcwd()
-RELATIVE_PATH = "database/data/example.db"
+RELATIVE_PATH = "database/data/sample.db"
 FILE_DB_PATH = os.path.join(ROOT_PATH, RELATIVE_PATH)
 
 os.makedirs(os.path.dirname(FILE_DB_PATH), exist_ok=True)

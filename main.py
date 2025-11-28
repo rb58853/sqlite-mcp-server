@@ -1,4 +1,3 @@
-import os
 import click
 import asyncio
 from fastapi import FastAPI
@@ -7,8 +6,6 @@ from uvicorn import Config, Server
 from src.api.httpstream.api import FastAPP, FastAppSettings
 from src.mcp.server import sqlite_mcp_server
 from src.config.logger import logger
-from src.db_client.database_conn import DB_PATH, DatabaseConnection
-
 
 def httpstream(port: int, host: str, dns):
     settings: FastAppSettings = FastAppSettings(
@@ -45,7 +42,7 @@ def httpstream(port: int, host: str, dns):
     type=str,
     help="DNS en el cual se expone el servidor. Default: None",
 )
-def main(port: int, host: str, mode: str, dns: str | None, database_path: str):
+def main(port: int, host: str, mode: str, dns: str | None):
     if mode == "http-stream":
         httpstream(port=port, host=host, dns=dns)
 

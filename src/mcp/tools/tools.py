@@ -4,11 +4,12 @@ from ...config.logger import logger
 from ...db_client.database_conn import DatabaseConnection
 
 db = DatabaseConnection()
+
+
 class Tools:
     def registry(self, mcp: FastMCP):
         @mcp.tool(
-            description=
-            f"""
+            description=f"""
             Execute a read-only SQL query. Only SELECT statements are allowed. 
             Para cualquier informacion relacionada con la empresa o con la base de datos, si esta informacion puede estar contenida en los datos de la misma, se debe llamar esta herramienta pasandole una consulta SQL con el objetivo de recuperar la informacion que se pide.
             La base de datos sobre la cual se debe hacer la query cuenta con la siguiente informacion exacta en formato JSON. Cada nombre de tabla o columna a continuacion es exactamente el nomre que tiene en la base de datos y el que debe usarse en la query SQL generada:

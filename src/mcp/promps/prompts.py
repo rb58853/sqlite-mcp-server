@@ -1,5 +1,6 @@
 import json
 from mcp.server.fastmcp import FastMCP
+from mcp.types import PromptMessage, TextContent
 from mcp.server.fastmcp.prompts.base import UserMessage, Message
 from ...config.logger import logger
 from ...db_client.database_conn import DatabaseConnection
@@ -9,6 +10,8 @@ db = DatabaseConnection()
 
 class Prompts:
     def registry(self, mcp: FastMCP):
+        return
+
         @mcp.prompt(
             description=f"""
             Genera un prompt para explicar al LLM todo el contexto de la base de datos sqlite que se tiene. 
@@ -29,4 +32,13 @@ class Prompts:
             logger.debug(f"Generated describe_query_prompt text: {prompt_text}")
             result = [UserMessage(prompt_text)]
             logger.debug("Exiting describe_query_prompt()")
-            return result
+
+            return [
+                PromptMessage(
+                    role="user",
+                    content=TextContent(
+                        type="text",
+                        text=prompt_text,
+                    ),
+                )
+            ]
