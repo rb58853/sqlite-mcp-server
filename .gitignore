@@ -1,0 +1,11 @@
+# Cache
+*.pyc
+
+# Debuging
+debug.py
+
+# Logging
+log/*
+
+# Database
+database/data/*
