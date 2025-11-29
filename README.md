@@ -65,3 +65,16 @@ Para crear una base de datos de ejemplo, se puede ejecutar el archivo `database/
 ```shell
 python3 database/create_sample_db.py
 ```
+
+## Consideraciones
+
+La implementacion para extraer datos de la base de datos SQL es generica, pero esta abierta a ajustes.
+**Por que?** La generalizion es muy buena, pero a niveles de muchos datos, puede llegar a ser confusa para el LLM. Por lo cual, separar en dependencias cada herramenta puede mejorar la comprension del LLM. En este caso particular, se decide separar la tabla clientes de la generacion generica de consultas SQL, de esta forma la responsabilidad del manejo de estos datos de clientes quedara por parte del resource: `get_clients_data(query:str)`.
+
+Para futuras extensiones y/o modificaciones, tener en cuenta esta separacion de dependencias puede mejorar la comprension mas precisa por parte del LLM que recibe el servicio expuesto. De esta manera se le puede pasar informacion mas detallada a un `tool` o `resource`. Por ejemplo.
+
+## Ideas de posibles Futuras implementaciones
+
+Para futuras implementaciones se puede hacer un sistema de seguridad `modo seguro`/`modo insguro` que permita hacer modificaciones en la base de datos. De esta forma se podria tener un MCP exponiendo servicios solo para cientes y otro MCP que expone servicios para administradores. Esto comprende una implementacion rigurosa de seguridad.
+
+Tener en cuenta que es posible exponer mas de un MCP server desde la misma instancia de Fastapi. Haciendo algunas extensiones al codigo se pueden separar dos tipos de servidores en `clients-server` o `admins-server`.

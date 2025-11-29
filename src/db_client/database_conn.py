@@ -3,6 +3,8 @@ import sqlite3
 from sqlite3 import Connection
 from ..config.logger import logger
 
+# from __future__ import annotations
+
 # ------------------------------------------------------------------------------
 # Database Connection
 # ------------------------------------------------------------------------------
@@ -15,7 +17,8 @@ DB_PATH = ABSOLUTE_PATH if ABSOLUTE_PATH else os.path.join(ROOT_PATH, RELATIVE_P
 
 # SINGLETON
 class DatabaseConnection:
-    _instance = None
+    # _instance: DatabaseConnection | None = None  # Singleton instance
+    _instance = None  # Singleton instance
 
     def __new__(cls, path: str = DB_PATH):
         # Si ya existe una instancia, se reutiliza
@@ -28,7 +31,7 @@ class DatabaseConnection:
     def __initialize(self, path: str = DB_PATH):
         self.__connection: Connection | None = None
         self.__tables_and_columns: dict | None = None
-        self.db_path = path
+        self.db_path: str = path
 
     @property
     def connection(self) -> Connection:
@@ -49,7 +52,7 @@ class DatabaseConnection:
 
         return self.__connection
 
-    def get_tables_and_columns(self) -> dict:
+    def get_tables_and_columns(self, exclude_tables: list[str] = []) -> dict:
         # cache simple
         if self.__tables_and_columns is not None:
             return self.__tables_and_columns
@@ -73,22 +76,43 @@ class DatabaseConnection:
         data: dict = {"tables": {}}
 
         for table_name in tablas:
-            # # 2) Info “genérica” de la tabla (puedes personalizar este texto)
-            # info_tabla = f"Tabla {table_name} en la base de datos {self.db_path}"
+            if table_name in exclude_tables:
+                continue
 
-            # 3) Obtener columnas de la tabla con PRAGMA
-            cur.execute(
-                f"PRAGMA table_info('{table_name}');"
-            )  # devuelve cid, name, type, notnull, dflt_value, pk. [web:11][web:15]
+            cur.execute(f"PRAGMA table_info('{table_name}');")
             cols_rows = cur.fetchall()
 
             columns = []
             for _, name, col_type, _, _, _ in cols_rows:
                 columns.append({"name": name, "type": col_type})
 
-            data["tables"][table_name] = {
-                "columns": columns,
-            }
+            data["tables"][table_name] = {"columns": columns}
 
         self.__tables_and_columns = data
         return self.__tables_and_columns
+
+    def get_table(self, table_name: str) -> dict:
+        conn = self.connection
+        cur = conn.cursor()
+
+        cur.execute(
+            """
+            SELECT name
+            FROM sqlite_master
+            WHERE type = 'table'
+            AND name NOT LIKE 'sqlite_%';
+            """
+        )
+
+        tablas = [row[0] for row in cur.fetchall()]
+
+        for table_name in tablas:
+            if table_name == table_name:
+                cur.execute(f"PRAGMA table_info('{table_name}');")
+                cols_rows = cur.fetchall()
+                columns = []
+                for _, name, col_type, _, _, _ in cols_rows:
+                    columns.append({"name": name, "type": col_type})
+                return {table_name: {"columns": columns}}
+
+        return {}
