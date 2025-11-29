@@ -1,8 +1,10 @@
 import contextlib
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
+from fastauth import Fastauth, FastauthSettings
 from mcp.server.fastmcp import FastMCP
 from pydantic import BaseModel
+import os
 
 
 class FastAppSettings(BaseModel):
@@ -55,4 +57,16 @@ class FastAPP:
                 "client_example": "https://github.com/rb58853/fastchat-mcp",
             }
 
+        # Set simple middleware authorization
+        # See fastauth documentation https://github.com/rb58853/fastauth-api
+        auth_settings: FastauthSettings = FastauthSettings(
+            app_name="sqlite mcp server",
+            database_api_path=None,
+            master_token=os.getenv("MASTER_TOKEN"),
+            cryptography_key=os.getenv("MASTER_TOKEN"),
+            master_token_paths=["/"],
+        )
+        auth = Fastauth(settings=auth_settings)
+        auth.set_auth(_app)
+        #####################################################################
         return _app
