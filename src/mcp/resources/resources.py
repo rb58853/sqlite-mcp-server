@@ -1,33 +1,42 @@
 import json
+import yaml
+from pathlib import Path
 from mcp.server.fastmcp import FastMCP
 from ...config.logger import logger
 from ...db_client.database_conn import DatabaseConnection
 
 db = DatabaseConnection()
 
+CLIENTS_TABLE_NAME: str = "clientes"
 
 class Resources:
-    def registry(self, mcp: FastMCP):
-        @mcp.resource("schema://sqlite/clients_info")
-        def clients_information(query: str) -> str:
-            """
-            Esta funcion esta encargada de recuperar informacion de la tabla clientes de la base de datos SQL.
-            Separar esta dependencia para este funcion, mejora la claridad de ideas expuestas al LLM y separa el manejo de usuarios con el resto
-            de los datos
-            """
-            logger.debug("Entering list_table_schemas()")
+    def __init__(self):
+        self.db = DatabaseConnection()
+        # db_tables_and_columns: dict = db.get_tables_and_columns()
+        self.descriptions: dict[str:str] = {}
+        self.__load_descriptions()
+
+    def __load_descriptions(self) -> None:
+        """Load tool descriptions from YAML files."""
+        # Path to the descriptions directory
+        descriptions_dir = Path(__file__).parent / "descriptions"
+
+        # Check if the directory exists
+        if not descriptions_dir.exists():
+            raise FileNotFoundError(
+                f"Tool descriptions directory not found: {descriptions_dir}"
+            )
+
+        # Load all YAML files in the directory
+        for yaml_file in descriptions_dir.glob("*.yaml"):
             try:
-                # Get all tables from sqlite_master where type is table.
-                cursor = db.connection.execute(
-                    "SELECT name, sql FROM sqlite_master WHERE type='table'"
-                )
-                rows = cursor.fetchall()
-                # Build a dictionary: table name -> schema SQL.
-                schemas = {row["name"]: row["sql"] for row in rows if row["sql"]}
-                result = json.dumps(schemas, indent=2)
-                logger.debug(f"Retrieved table schemas: {schemas}")
+                with open(yaml_file) as f:
+                    tool_descriptions = yaml.safe_load(f)
+                    if tool_descriptions:
+                        self.descriptions.update(tool_descriptions)
             except Exception as e:
-                result = f"Error retrieving table schemas: {e}"
-                logger.exception(result)
-            logger.debug("Exiting list_table_schemas()")
-            return result
+                print(f"Error loading tool descriptions from {yaml_file}: {e}")
+
+   
+    def registry(self, mcp: FastMCP):
+        pass

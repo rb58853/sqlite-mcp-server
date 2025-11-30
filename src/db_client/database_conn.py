@@ -106,8 +106,8 @@ class DatabaseConnection:
 
         tablas = [row[0] for row in cur.fetchall()]
 
-        for table_name in tablas:
-            if table_name == table_name:
+        for _table_name in tablas:
+            if _table_name == table_name:
                 cur.execute(f"PRAGMA table_info('{table_name}');")
                 cols_rows = cur.fetchall()
                 columns = []
