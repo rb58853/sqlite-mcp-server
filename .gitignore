@@ -9,4 +9,6 @@ log/*
 
 # Database
 database/data/*
+
+# Environment variables
 .env
