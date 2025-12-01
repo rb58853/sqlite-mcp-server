@@ -12,21 +12,60 @@ class FastAppSettings(BaseModel):
     """Public Expose IP"""
     dns: str = ""
     """Public Expose DNS"""
-    # servers: list[FastMCP] = []
-    # """MCP server that will be add to app"""
-
-
+    
 class FastAPP:
+    """
+    ## FastAPP
+    High-level manager that builds a FastAPI application exposing one or more FastMCP
+    servers with coordinated lifecycle management and simple authentication.
+    Responsibilities:
+    - Manage asynchronous lifespan of all provided FastMCP session managers so they
+        are started and stopped with the application.
+    - Mount each FastMCP HTTP app under "/{server.name}".
+    - Provide a root redirect ("/") to a small help endpoint ("/help") that lists
+        available servers and basic client information.
+    - Apply Fastauth middleware using environment-provided `MASTER_TOKEN` and
+        cryptography key for simple authorization.
+    Attributes:
+            app_settings (FastAppSettings): Application configuration (e.g. expose_url).
+            servers (list[FastMCP]): Sequence of FastMCP instances to expose and manage.
+    ## Properties
+            app -> FastAPI: Constructed and configured FastAPI application. Creating
+            this property wires up lifespan management, mounts server apps, registers
+            the redirect/help endpoints, and attaches Fastauth middleware.
+    ## Usage notes:
+    - The `Fastauth` master token and cryptography key are read from the
+        `MASTER_TOKEN` environment variable by default.
+    - Server mount paths are derived from each server's name; spaces are replaced
+        with underscores in help URLs.
+    """
+
     def __init__(
         self,
         fast_app_settings: FastAppSettings = FastAppSettings(),
         servers: list[FastMCP] = [],
     ):
+        """
+        Initialize the API instance.
+        Args:
+            fast_app_settings (FastAppSettings): Application configuration to use. Defaults to a new FastAppSettings().
+            servers (list[FastMCP], optional): List of FastMCP server instances to manage. Defaults to an empty list.
+        """
         self.app_settings: FastAppSettings = fast_app_settings
         self.servers = servers
 
     @property
     def app(self) -> FastAPI:
+        """Create and configure the FastAPI application for the MCP servers.
+        Builds and returns a FastAPI instance that:
+        - Manages the asynchronous lifespan of all server session managers.
+        - Mounts each FastMCP's HTTP app at `"/{server.name}"`.
+        - Registers a root redirect (`"/"`) and a `"/help"` JSON endpoint describing servers.
+        - Applies Fastauth middleware using `MASTER_TOKEN` (and cryptography key) from env.
+        Returns:
+            FastAPI: A configured FastAPI application ready to be served.
+        """
+
         # servers: list[FastMCP] = self.app_settings.servers
         servers: list[FastMCP] = self.servers
 

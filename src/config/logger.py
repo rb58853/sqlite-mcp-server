@@ -11,4 +11,5 @@ logging.basicConfig(
     ],
 )
 logger = logging.getLogger("sqlite_mcp_server")
+
 logger.debug("Logging is configured.")

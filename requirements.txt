@@ -1,5 +1,6 @@
 sqlite3
 mcp[cli]
-fastauth-api
+fastapi
 uvicorn
 yaml
+fastauth-api

@@ -1,0 +1,1 @@
+Documenta esta funcion siguiende beunas practicas de programacion y documentacion de python, sin extenderte mas de lo debido, siendo claro y preciso. Escribe en ingles.

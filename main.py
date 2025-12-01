@@ -3,11 +3,31 @@ import asyncio
 from fastapi import FastAPI
 from uvicorn import Config, Server
 
-from src.api.httpstream.api import FastAPP, FastAppSettings
+from src.api.httpstream import FastAPP, FastAppSettings
 from src.mcp.server import sqlite_mcp_server
 from src.config.logger import logger
 
+
 def httpstream(port: int, host: str, dns):
+    """
+    Start and run the MCP HTTP stream server.
+
+    This function configures a FastAPI application using FastAppSettings and the
+    provided MCP server, then starts an asynchronous Uvicorn server using
+    asyncio.run. It logs the server address when starting.
+
+    Parameters
+    ----------
+    port : int
+        TCP port to bind the server to (e.g., 8080).
+    host : str
+        Host address to bind the server to (e.g., "127.0.0.1" or "0.0.0.0").
+    dns : str | None
+        Optional DNS name under which the server is exposed. If None, an empty
+        DNS value is used in the application settings.
+
+    """
+    
     settings: FastAppSettings = FastAppSettings(
         dns="" if dns is None else dns,
         expose_url=f"http://{host}:{port}",
