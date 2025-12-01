@@ -1,0 +1,41 @@
+name: Develop - Deploy
+
+on:
+  push:
+    branches: 
+      - dev-deploy
+    tags:
+      - 'dev-v*.*.*'
+env:
+  VPS_WORKING_DIR: /srv/https/rb58853.com/mcp-examples/8080.sqlite-mcp-server
+
+jobs:
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Copy dist to VPS
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          become: true  # Activa sudo
+          # Selecting all
+          source: .
+          # The path is based on the directory where the user logged into the server starts
+          target: ${{ env.VPS_WORKING_DIR }}
+      
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }} 
+          script: |
+            cd ${{ env.VPS_WORKING_DIR }}
+            ls -la
+            docker compose -f docker-compose.yml up -d --build
