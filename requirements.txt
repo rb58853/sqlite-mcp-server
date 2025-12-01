@@ -1,6 +1,5 @@
-sqlite3
 mcp[cli]
 fastapi
 uvicorn
-yaml
 fastauth-api
+PyYAML

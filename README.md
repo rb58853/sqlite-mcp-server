@@ -12,7 +12,7 @@ The server hosts tools enabling SELECT-only queries on SQLite databases. It enfo
 
 1. Install dependencies using the project's `requirements.txt`.
 2. Configure environment variables (see [Configuration](#configuration-and-environment-variables) section).
-3. Generate a sample database using [`database/create_sample_db.py`]() or connect to a custom database via `.env`.
+3. Generate a sample database using [`database/create_sample_db.py`](#sample-database-creation) or connect to a custom database via `.env`.
 
 4. Launch the HTTP-stream server:
 
@@ -25,6 +25,7 @@ The server hosts tools enabling SELECT-only queries on SQLite databases. It enfo
 Deploy a Docker container with the sample database using Docker Compose.
 
 ``` bash
+docker compose -f docker-compose.yml up -d --build
 ```
 
 ## General Architecture

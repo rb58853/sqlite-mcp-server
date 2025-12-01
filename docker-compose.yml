@@ -1,0 +1,16 @@
+name: "SQL MCP Server"
+
+services:
+  server-mcp:
+    image: sql-mcp-server:latest
+    container_name: sql-mcp-server
+    build:
+      context: .
+      dockerfile: dockerfile
+      tags:
+        - sql-mcp-server
+    env_file:
+      - .env
+    restart: unless-stopped
+    ports:
+      - 8080:8080
