@@ -21,7 +21,7 @@ def httpstream(port: int, host: str, dns):
     port : int
         TCP port to bind the server to (e.g., 8080).
     host : str
-        Host address to bind the server to (e.g., "127.0.0.1" or "0.0.0.0").
+        Host address to bind the server to (e.g., "0.0.0.0" or "0.0.0.0").
     dns : str | None
         Optional DNS name under which the server is exposed. If None, an empty
         DNS value is used in the application settings.
@@ -54,7 +54,7 @@ def httpstream(port: int, host: str, dns):
 
 @click.command()
 @click.option("--port", default=8080, help="Port to listen on")
-@click.option("--host", default="127.0.0.1", help="Host to hosted on")
+@click.option("--host", default="0.0.0.0", help="Host to hosted on")
 @click.option("--mode", default="http-stream", help="Hoted Mode")
 @click.option(
     "--dns",

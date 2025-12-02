@@ -8,7 +8,7 @@ import os
 
 
 class FastAppSettings(BaseModel):
-    expose_url: str = "http://127.0.0.1:8000"
+    expose_url: str = "http://0.0.0.0:8000"
     """Public Expose IP"""
     dns: str = ""
     """Public Expose DNS"""
@@ -103,7 +103,7 @@ class FastAPP:
             database_api_path=None,
             master_token=os.getenv("MASTER_TOKEN"),
             cryptography_key=os.getenv("MASTER_TOKEN"),
-            master_token_paths=["/"],
+            master_token_paths=["/sqlite_mcp_server"],
         )
         auth = Fastauth(settings=auth_settings)
         auth.set_auth(_app)

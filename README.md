@@ -74,7 +74,7 @@ Adjust host/port/name and replace token:
     "mcp_servers": {
         "sqlite_server_example": {
             "protocol": "httpstream",
-            "httpstream-url": "http://127.0.0.1:8080/sqlite_mcp_server/mcp",
+            "httpstream-url": "http://0.0.0.0:8080/sqlite_mcp_server/mcp",
             "name": "sqlite_server_example",
             "description": "SQLite MCP for read-only SQL tools",
             "headers": {
