@@ -1,4 +1,5 @@
 import contextlib
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from fastauth import Fastauth, FastauthSettings
@@ -12,7 +13,8 @@ class FastAppSettings(BaseModel):
     """Public Expose IP"""
     dns: str = ""
     """Public Expose DNS"""
-    
+
+
 class FastAPP:
     """
     ## FastAPP
@@ -107,5 +109,14 @@ class FastAPP:
         )
         auth = Fastauth(settings=auth_settings)
         auth.set_auth(_app)
+        _app.add_middleware(
+            TrustedHostMiddleware,
+            allowed_hosts=[
+                "77.237.243.163",
+                "77.237.243.163:8080",
+                "localhost",
+                "127.0.0.1",
+            ],
+        )
         #####################################################################
         return _app
