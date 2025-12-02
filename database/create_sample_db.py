@@ -57,14 +57,14 @@ cursor.execute(
 clientes = [
     (
         "Pedro Alvarez",
-        "+53 56671234",
+        "+56 981234567",
         "pedro.alvarez@gmail.com",
         "Gran Empresa",
         "Chile",
     ),
     (
         "Maria Torres",
-        "+34 612345678",
+        "+54 91123456789",
         "maria.torres@iberdata.es",
         "Mediana Empresa",
         "Argentina",
@@ -99,7 +99,7 @@ clientes = [
     ),
     (
         "Daniel Rodríguez",
-        "+49 15123456789",
+        "+1 2135557890",
         "daniel.rodriguez@eurosys.de",
         "Gran Empresa",
         "Estados Unidos",
@@ -109,7 +109,7 @@ clientes = [
         "+39 3471234567",
         "sara.lopez@mediterranea.it",
         "Mediana Empresa",
-        "Estados Unidos",
+        "Italia",
     ),
     (
         "Carlos Herrera",
@@ -123,9 +123,10 @@ clientes = [
         "+44 7400123456",
         "lucia.gonzalez@ukpartners.uk",
         "Gran Empresa",
-        "Argentina",
+        "Reino Unido",
     ),
 ]
+
 
 cursor.executemany(
     """
