@@ -109,16 +109,16 @@ class FastAPP:
         )
         auth = Fastauth(settings=auth_settings)
         auth.set_auth(_app)
-        _app.add_middleware(
-            TrustedHostMiddleware,
-            allowed_hosts=[
-                "77.237.243.163",
-                "77.237.243.163:8080",
-                "http://77.237.243.163:8080",
-                "localhost",
-                "0.0.0.0",
-                "127.0.0.1",
-            ],
-        )
+        # _app.add_middleware(
+        #     TrustedHostMiddleware,
+        #     allowed_hosts=[
+        #         "77.237.243.163",
+        #         "77.237.243.163:8080",
+        #         "http://77.237.243.163:8080",
+        #         "localhost",
+        #         "0.0.0.0",
+        #         "127.0.0.1",
+        #     ],
+        # )
         #####################################################################
         return _app
