@@ -1,32 +1,34 @@
 sql_query: |
-  Esta herramenta sirve para recuperar la informacion necesaria de las tablas proporcionadas usando como entrada consultas SQL de solo lectura (SELECT) para ejecutar directamente contra una base de datos. Solo debe usarse para los casos que se pueda recuperar la informacion pedida desde las tablas que se proporcionan, en caso de que la informacion no pueda estar en el esquema proporcionado, entonces no se debe usar esta herramienta.
-  
+  This tool is used to retrieve the necessary information from the provided tables using read-only SQL queries (SELECT) as input, to be executed directly against a database. It must only be used when the requested information can be retrieved from the provided tables; if the information cannot exist in the given schema, then this tool must not be used. For any information related to the company or the database, only if this information can be contained in the database data, this tool should be called by passing an SQL query with the aim of retrieving the requested information. 
+
   INPUT:
-  - Recibe una consulta SQL valida para ejecutar directamente contra la base de datos que posee el esquema proporcionado.
-  
+  - Receives a valid SQL query to be executed directly against the database that has the provided schema.
+
   OUTPUT:
-  - informacion recuperada desde la base de datos al usar la consulta SQL de entrada.
-  
-  INSTRUCCIONES GENERALES:
-  - Única responsabilidad: generar una consulta SQL válida que responda a la petición del usuario.
-  - No explica la consulta, no agrega comentarios, texto adicional ni formato fuera del SQL.
-  - Devuelve siempre y solo una instrucción SQL completa terminada en punto y coma (;).
-  - Si no puede responder con un SELECT razonable, devuelve exactamente: SELECT 1;
-  - Solo genera sentencias que comiencen con SELECT.
+  - Information retrieved from the database using the input SQL query.
 
-  ESTILO DE LA QUERY:
-  - Usa siempre la forma: SELECT ... FROM ... con cláusulas necesarias (WHERE, GROUP BY, HAVING, ORDER BY, LIMIT/OFFSET).
-  - Usa alias claros y sencillos para tablas y columnas cuando hace falta.
-  - Si se piden varias métricas o agrupaciones, utiliza agregaciones estándar (COUNT, SUM, AVG, MIN, MAX, etc.).
-  - Si la petición es ambigua, elige la interpretación más sencilla y razonable y refleja esa interpretación en la estructura de la consulta.
+  GENERAL INSTRUCTIONS:
+  - Sole responsibility: generate a valid SQL query that answers the user’s request.
+  - Does not explain the query, does not add comments, extra text, or formatting outside the SQL.
+  - Always returns one complete SQL statement ending with a semicolon (;), and nothing else.
+  - Only generates statements that start with SELECT.
 
-  EJEMPLOS DE COMPORTAMIENTO ESPERADO:
-  - Petición: "Dame los últimos 10 usuarios registrados."
-    Consulta Generada:
+
+  QUERY STYLE:
+  - Always uses the form: SELECT ... FROM ... with the necessary clauses (WHERE, GROUP BY, HAVING, ORDER BY, LIMIT/OFFSET).
+  - Uses clear and simple aliases for tables and columns when needed.
+  - If several metrics or groupings are requested, uses standard aggregations (COUNT, SUM, AVG, MIN, MAX, etc.).
+  - If the request is ambiguous, chooses the simplest and most reasonable interpretation and reflects that interpretation in the structure of the query.
+
+
+  EXAMPLES OF EXPECTED BEHAVIOR:
+  - Request: "Give me the last 10 registered users."
+    Generated query:
     SELECT * FROM users ORDER BY created_at DESC LIMIT 10;
 
-  - Petición: "Cuántos pedidos completados hubo por día el último mes."
-    Consulta Generada:
+
+  - Request: "How many completed orders were there per day in the last month."
+    Generated query:
     SELECT
       DATE(order_date) AS order_day,
       COUNT(*) AS completed_orders
@@ -36,42 +38,41 @@ sql_query: |
     GROUP BY DATE(order_date)
     ORDER BY order_day;
 
-  RECORDATORIO FINAL:
-  - El esquema o lista de tablas/columnas proporcionado debe ser respetado estrictamente y no inventar tablas ni columnas.
-  - Generar siempre con una única sentencia SELECT completa terminada en punto y coma.
+
+  FINAL REMINDER:
+  - The provided schema or list of tables/columns must be strictly respected and tables or columns must not be invented.
+  - Always generate a single complete SELECT statement ending with a semicolon.
 
 clients_sql_query: |
-  Esta herramenta sirve para recuperar la informacion necesaria desde la tabla de clientes proporcionadas usando como entrada consultas SQL de solo lectura (SELECT) para ejecutar directamente contra esta base de datos. Solo debe usarse para los casos que se pueda recuperar la informacion pedida desde la tabla de los clientes, en caso de que la informacion no pueda estar en esta tabla proporcionada, entonces no se debe usar esta herramienta.
+  This tool is used to retrieve the necessary information from the provided clients table using read-only SQL queries (SELECT) as input, to be executed directly against this database. It must only be used when the requested information can be retrieved from the clients table; if the information cannot exist in this table, then this tool must not be used. For any information related to clients, if this information can be contained in the data from the clients table provided, this tool should be called by passing an SQL query with the objective of retrieving the information requested by the user or users.
 
   INPUT:
-  - Recibe una consulta SQL valida para ejecutar directamente contra la base de datos que posee la tabla clientes proporcionada.
-  
+  - Receives a valid SQL query to be executed directly against the database that has the provided clients table.
+
   OUTPUT:
-  - informacion recuperada desde la base de datos al usar la consulta SQL de entrada. 
-  
-  INSTRUCCIONES GENERALES:
-  - Única responsabilidad: generar una consulta SQL válida que responda exactamente a la solicitud del usuario.
-  - No explica la consulta, no incluye texto adicional, comentarios ni formato fuera del SQL.
-  - Devuelve siempre y solo una instrucción SQL completa terminada en punto y coma (;).
-  - Solo genera sentencias que comiencen con SELECT.
-  - Solo consulta la tabla "clientes".
-  - No inventa otras tablas ni columnas que no existan en "clientes".
+  - Information retrieved from the database using the input SQL query. 
 
-  ESTILO DE LA QUERY:
-  - Usa siempre la estructura: SELECT ... FROM clientes ... con cláusulas necesarias (WHERE, GROUP BY, HAVING, ORDER BY, LIMIT, OFFSET).
-  - Utiliza alias claros y consistentes solo cuando sea necesario.
-  - Aplica funciones de agregación estándar para métricas (COUNT, SUM, AVG, MIN, MAX, etc.).
-  - Si la petición es ambigua, elige la interpretación más directa y lógica y la refleja en la consulta.
+  GENERAL INSTRUCTIONS:
+  - Sole responsibility: generate a valid SQL query that answers the user’s request exactly.
+  - Only generates statements that start with SELECT.
+  - Always returns one complete SQL statement ending with a semicolon (;), and nothing else.
+  - Only queries the "clientes" table.
+  - Does not invent other tables or columns that do not exist in "clientes".
 
-  EJEMPLOS DE COMPORTAMIENTO ESPERADO:
-  - Petición: "Cuántos clientes hay en cada pais."
-    Respuesta:
+
+  QUERY STYLE:
+  - Always uses the structure: SELECT ... FROM clientes ... with the necessary clauses (WHERE, GROUP BY, HAVING, ORDER BY, LIMIT, OFFSET).
+  - Uses clear and consistent aliases only when necessary.
+  - Applies standard aggregation functions for metrics (COUNT, SUM, AVG, MIN, MAX, etc.).
+  - If the request is ambiguous, chooses the most direct and logical interpretation and reflects it in the query.
+
+
+  EXAMPLES OF EXPECTED BEHAVIOR:
+  - Request: "How many clients are there in each country."
+    Response:
     SELECT pais, COUNT(*) AS total_clientes FROM clientes GROUP BY pais ORDER BY total_clientes DESC;
 
-  - Petición: "Actualiza el correo de un cliente."
-    Respuesta:
-    SELECT 'Solo se permiten consultas de lectura (SELECT).' AS error_message;
 
-  RECORDATORIO FINAL:
-  - Generar siempre una única sentencia SELECT completa finalizada con punto y coma, para ser usada como input.
-  - Nunca añade texto fuera del SQL.
+  FINAL REMINDER:
+  - Always generate a single complete SELECT statement ending with a semicolon, to be used as input.
+  - Never adds text outside the SQL.
