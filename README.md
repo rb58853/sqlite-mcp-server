@@ -1,10 +1,10 @@
 # SQLite MCP Server
 
-A lightweight FastAPI-based server exposing one or more FastMCP instances for read-only (SELECT) SQL queries against a SQLite database. It implements simple token-based authentication and strict policies to prevent schema or data modifications.[web:1][web:5]
+A lightweight FastAPI-based server exposing one or more FastMCP instances for read-only (SELECT) SQL queries against a SQLite database. It implements simple token-based authentication and strict policies to prevent schema or data modifications.
 
 ## Purpose
 
-The server hosts tools enabling SELECT-only queries on SQLite databases. It enforces secure access and token-based authentication via MASTER_TOKEN.[web:7]
+The server hosts tools enabling SELECT-only queries on SQLite databases. It enforces secure access and token-based authentication via MASTER_TOKEN.
 
 ## Quick Start
 
@@ -31,10 +31,10 @@ docker compose -f docker-compose.yml up -d --build
 ## General Architecture
 
 - `src/main.py`: CLI entry point; constructs `FastAppSettings` and mounts configured MCP servers.
-- `src/api/httpstream/api.py`: Builds the FastAPI application; manages FastMCP session lifecycles; mounts each FastMCP server at `/{server.name}`; provides root redirection to `/help` and exposes URLs via `/help` endpoint; integrates [Fastauth](https://github.com/rb58853/fastauth-api) middleware using `MASTER_TOKEN`.[web:3]
+- `src/api/httpstream/api.py`: Builds the FastAPI application; manages FastMCP session lifecycles; mounts each FastMCP server at `/{server.name}`; provides root redirection to `/help` and exposes URLs via `/help` endpoint; integrates [Fastauth](https://github.com/rb58853/fastauth-api) middleware using `MASTER_TOKEN`.
 - `src/mcp/tools/tools.py`: Loads YAML descriptions and registers MCP tools: `sql_query` (generic SELECT-only), `clients_sql_query` (SELECT-only for `clientes` table); base implementation (`base_sql_query`) executes queries and returns JSON.
 - `src/mcp/utils.py`: Generates contextual prompts and DB schema JSON fragments: `base_db_context` (tables/columns schema, excluding `clientes`); `clients_table_context` (schema for `clientes` table).
-- `src/mcp/tools/descriptions/query_tools.yaml`: Human/machine descriptions for LLM-generated SQL tools; enforces single SELECT statements without modifications or external execution.[web:7]
+- `src/mcp/tools/descriptions/query_tools.yaml`: Human/machine descriptions for LLM-generated SQL tools; enforces single SELECT statements without modifications or external execution.
 
 ## Configuration and Environment Variables
 
@@ -44,7 +44,7 @@ docker compose -f docker-compose.yml up -d --build
 
 ## Authentication and Security
 
-[Fastauth](https://github.com/rb58853/fastauth-api) middleware validates requests using `MASTER_TOKEN`. Tools enforce SQL statements starting with `SELECT` (case-insensitive); non-SELECT queries are rejected. YAML descriptions mandate single SELECT, no DDL/DML, no transactions, no external execution. Execution returns JSON-serialized rows; errors are logged and returned as strings.[web:5]
+[Fastauth](https://github.com/rb58853/fastauth-api) middleware validates requests using `MASTER_TOKEN`. Tools enforce SQL statements starting with `SELECT` (case-insensitive); non-SELECT queries are rejected. YAML descriptions mandate single SELECT, no DDL/DML, no transactions, no external execution. Execution returns JSON-serialized rows; errors are logged and returned as strings.
 
 ## Database Management
 
@@ -87,11 +87,11 @@ Adjust host/port/name and replace token:
 
 ## Tool Registration and Query Execution
 
-Tools load YAML from `src/mcp/tools/descriptions` and register with FastMCP, attaching contexts (`base_db_context` or `clients_table_context`). `base_sql_query` validates SELECT prefix, executes via `db.connection.execute(query)`, converts to dictionaries, and returns formatted JSON; errors yield messages and logs. `clients_sql_query` prepends `clientes` table context for precise LLM schema awareness.[web:1]
+Tools load YAML from `src/mcp/tools/descriptions` and register with FastMCP, attaching contexts (`base_db_context` or `clients_table_context`). `base_sql_query` validates SELECT prefix, executes via `db.connection.execute(query)`, converts to dictionaries, and returns formatted JSON; errors yield messages and logs. `clients_sql_query` prepends `clientes` table context for precise LLM schema awareness.
 
 ## Logging and Debugging
 
-Configured logger (`src/config/logger`) handles debug/error messages. SQL execution errors include tracebacks in logs; API returns descriptive strings.[web:3]
+Configured logger (`src/config/logger`) handles debug/error messages. SQL execution errors include tracebacks in logs; API returns descriptive strings.
 
 ## Useful Paths
 
