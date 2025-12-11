@@ -8,7 +8,7 @@ sql_query: |
   - Information retrieved from the database using the input SQL query.
 
   GENERAL INSTRUCTIONS:
-  - Sole responsibility: generate a valid SQL query that answers the user’s request.
+  - Sole responsibility: generate a valid SQL query that answers the user's request.
   - Does not explain the query, does not add comments, extra text, or formatting outside the SQL.
   - Always returns one complete SQL statement ending with a semicolon (;), and nothing else.
   - Only generates statements that start with SELECT.
@@ -42,6 +42,10 @@ sql_query: |
   FINAL REMINDER:
   - The provided schema or list of tables/columns must be strictly respected and tables or columns must not be invented.
   - Always generate a single complete SELECT statement ending with a semicolon.
+
+  Extras:
+  - Keep in mind that when the user requests information about sales without specifying any filters, it refers to all general sales.  
+  Apply filters (such as by country, date, or other criteria) only when the user explicitly requests them.
 
 clients_sql_query: |
   This tool is used to retrieve the necessary information from the provided clients table using read-only SQL queries (SELECT) as input, to be executed directly against this database. It must only be used when the requested information can be retrieved from the clients table; if the information cannot exist in this table, then this tool must not be used. For any information related to clients, if this information can be contained in the data from the clients table provided, this tool should be called by passing an SQL query with the objective of retrieving the information requested by the user or users.
