@@ -1,5 +1,6 @@
 import yaml
 import json
+import re
 from pathlib import Path
 from mcp.server.fastmcp import FastMCP
 from ...config.logger import logger
@@ -113,9 +114,57 @@ def base_sql_query(query: str, db: DatabaseConnection) -> str:
     """
     logger.debug(f"Entering sql_query() with query: {query}")
 
-    # Safety: Only SELECT queries permitted
-    if not query.strip().lower().startswith("select"):
-        msg = "Error: Only SELECT queries are allowed."
+    normalized = query.strip()
+
+    if not normalized:
+        msg = "Error: Empty query."
+        logger.warning(msg)
+        return msg
+
+    # Safety: Only read-only queries are permitted.
+    # Accepts SELECT and CTEs (WITH ... SELECT ...).
+    # Blocks mutation/DDL/transaction and multi-statement inputs.
+    forbidden_tokens = (
+        "insert",
+        "update",
+        "delete",
+        "drop",
+        "alter",
+        "create",
+        "replace",
+        "truncate",
+        "attach",
+        "detach",
+        "vacuum",
+        "pragma",
+        "reindex",
+        "analyze",
+        "begin",
+        "commit",
+        "rollback",
+        "savepoint",
+        "release",
+    )
+
+    lowered = normalized.lower()
+    if not (lowered.startswith("select") or lowered.startswith("with")):
+        msg = "Error: Only read-only SELECT queries are allowed."
+        logger.warning(f"Query rejected: {query}. {msg}")
+        return msg
+
+    if re.search(r";\s*\S", normalized):
+        msg = "Error: Multiple SQL statements are not allowed."
+        logger.warning(f"Query rejected: {query}. {msg}")
+        return msg
+
+    for token in forbidden_tokens:
+        if re.search(rf"\b{token}\b", lowered):
+            msg = "Error: Query contains non read-only SQL keywords."
+            logger.warning(f"Query rejected: {query}. {msg}")
+            return msg
+
+    if not sqlite3_complete_query(normalized):
+        msg = "Error: Query is incomplete or malformed."
         logger.warning(f"Query rejected: {query}. {msg}")
         return msg
 
@@ -131,3 +180,14 @@ def base_sql_query(query: str, db: DatabaseConnection) -> str:
 
     logger.debug("Exiting sql_query()")
     return result
+
+
+def sqlite3_complete_query(query: str) -> bool:
+    """Basic statement completeness check for SQLite-compatible input."""
+    trimmed = query.strip()
+    if not trimmed:
+        return False
+
+    # SQLite accepts statements with or without trailing ';' via Python API.
+    # Keep this permissive but reject clearly broken endings.
+    return not trimmed.endswith(",")

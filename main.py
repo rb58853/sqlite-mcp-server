@@ -8,6 +8,22 @@ from src.mcp.server import sqlite_mcp_server
 from src.config.logger import logger
 
 
+def create_app(host: str = "0.0.0.0", port: int = 8080, dns: str | None = None) -> FastAPI:
+    """Build and return the FastAPI app instance used by uvicorn."""
+    settings: FastAppSettings = FastAppSettings(
+        dns="" if dns is None else dns,
+        expose_url=f"http://{host}:{port}",
+    )
+
+    return FastAPP(
+        fast_app_settings=settings,
+        servers=[sqlite_mcp_server],
+    ).app
+
+
+app: FastAPI = create_app()
+
+
 def httpstream(port: int, host: str, dns):
     """
     Start and run the MCP HTTP stream server.
@@ -28,14 +44,7 @@ def httpstream(port: int, host: str, dns):
 
     """
     
-    settings: FastAppSettings = FastAppSettings(
-        dns="" if dns is None else dns,
-        expose_url=f"http://{host}:{port}",
-    )
-
-    httpstream_api: FastAPI = FastAPP(
-        fast_app_settings=settings, servers=[sqlite_mcp_server]
-    ).app
+    httpstream_api: FastAPI = create_app(host=host, port=port, dns=dns)
 
     async def run_server() -> None:
         config = Config(

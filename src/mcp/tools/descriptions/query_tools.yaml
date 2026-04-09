@@ -1,78 +1,28 @@
 sql_query: |
-  This tool is used to retrieve the necessary information from the provided tables using read-only SQL queries (SELECT) as input, to be executed directly against a database. It must only be used when the requested information can be retrieved from the provided tables; if the information cannot exist in the given schema, then this tool must not be used. For any information related to the company or the database, only if this information can be contained in the database data, this tool should be called by passing an SQL query with the aim of retrieving the requested information. 
+  Use this tool to answer data questions with a single read-only SQL query on the provided SQLite schema.
 
-  INPUT:
-  - Receives a valid SQL query to be executed directly against the database that has the provided schema.
+  Rules:
+  - Return exactly one SQL statement and nothing else.
+  - Use only read-only queries: SELECT or WITH ... SELECT.
+  - Never generate DDL/DML or transactional statements.
+  - Respect table/column names exactly as defined in the provided schema.
+  - Prefer explicit column lists over SELECT * when possible.
 
-  OUTPUT:
-  - Information retrieved from the database using the input SQL query.
+  SQLite notes:
+  - Use SQLite-compatible syntax and functions.
+  - For date windows, use date('now', '-30 day') or datetime(...) patterns.
+  - Use LIMIT for result control when the user asks for "top", "latest", or similar.
 
-  GENERAL INSTRUCTIONS:
-  - Sole responsibility: generate a valid SQL query that answers the user’s request.
-  - Does not explain the query, does not add comments, extra text, or formatting outside the SQL.
-  - Always returns one complete SQL statement ending with a semicolon (;), and nothing else.
-  - Only generates statements that start with SELECT.
-
-
-  QUERY STYLE:
-  - Always uses the form: SELECT ... FROM ... with the necessary clauses (WHERE, GROUP BY, HAVING, ORDER BY, LIMIT/OFFSET).
-  - Uses clear and simple aliases for tables and columns when needed.
-  - If several metrics or groupings are requested, uses standard aggregations (COUNT, SUM, AVG, MIN, MAX, etc.).
-  - If the request is ambiguous, chooses the simplest and most reasonable interpretation and reflects that interpretation in the structure of the query.
-
-
-  EXAMPLES OF EXPECTED BEHAVIOR:
-  - Request: "Give me the last 10 registered users."
-    Generated query:
-    SELECT * FROM users ORDER BY created_at DESC LIMIT 10;
-
-
-  - Request: "How many completed orders were there per day in the last month."
-    Generated query:
-    SELECT
-      DATE(order_date) AS order_day,
-      COUNT(*) AS completed_orders
-    FROM orders
-    WHERE status = 'completed'
-      AND order_date >= CURRENT_DATE - INTERVAL '30 days'
-    GROUP BY DATE(order_date)
-    ORDER BY order_day;
-
-
-  FINAL REMINDER:
-  - The provided schema or list of tables/columns must be strictly respected and tables or columns must not be invented.
-  - Always generate a single complete SELECT statement ending with a semicolon.
+  If user intent is ambiguous:
+  - Choose the most direct interpretation that can be solved with existing schema.
+  - Do not invent tables or columns.
 
 clients_sql_query: |
-  This tool is used to retrieve the necessary information from the provided clients table using read-only SQL queries (SELECT) as input, to be executed directly against this database. It must only be used when the requested information can be retrieved from the clients table; if the information cannot exist in this table, then this tool must not be used. For any information related to clients, if this information can be contained in the data from the clients table provided, this tool should be called by passing an SQL query with the objective of retrieving the information requested by the user or users.
+  Use this tool when the answer can be obtained only from table clientes.
 
-  INPUT:
-  - Receives a valid SQL query to be executed directly against the database that has the provided clients table.
-
-  OUTPUT:
-  - Information retrieved from the database using the input SQL query. 
-
-  GENERAL INSTRUCTIONS:
-  - Sole responsibility: generate a valid SQL query that answers the user’s request exactly.
-  - Only generates statements that start with SELECT.
-  - Always returns one complete SQL statement ending with a semicolon (;), and nothing else.
-  - Only queries the "clientes" table.
-  - Does not invent other tables or columns that do not exist in "clientes".
-
-
-  QUERY STYLE:
-  - Always uses the structure: SELECT ... FROM clientes ... with the necessary clauses (WHERE, GROUP BY, HAVING, ORDER BY, LIMIT, OFFSET).
-  - Uses clear and consistent aliases only when necessary.
-  - Applies standard aggregation functions for metrics (COUNT, SUM, AVG, MIN, MAX, etc.).
-  - If the request is ambiguous, chooses the most direct and logical interpretation and reflects it in the query.
-
-
-  EXAMPLES OF EXPECTED BEHAVIOR:
-  - Request: "How many clients are there in each country."
-    Response:
-    SELECT pais, COUNT(*) AS total_clientes FROM clientes GROUP BY pais ORDER BY total_clientes DESC;
-
-
-  FINAL REMINDER:
-  - Always generate a single complete SELECT statement ending with a semicolon, to be used as input.
-  - Never adds text outside the SQL.
+  Rules:
+  - Return exactly one SQL statement and nothing else.
+  - Query only table clientes.
+  - Use read-only SQL (SELECT or WITH ... SELECT).
+  - Never invent columns not present in clientes.
+  - Use SQLite-compatible syntax.

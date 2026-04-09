@@ -1,5 +1,6 @@
 import os
 import sqlite3
+from pathlib import Path
 from sqlite3 import Connection
 from ..config.logger import logger
 # from __future__ import annotations
@@ -7,14 +8,26 @@ from ..config.logger import logger
 ABSOLUTE_PATH: str | None = os.getenv("DATABASE_ABSOLUTE_PATH", None)
 """Environment variable for absolute database path, or None if not set."""
 
-ROOT_PATH = os.getcwd()
-"""Current working directory as root path for relative database location."""
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+"""Repository root path resolved from this module location."""
 
 RELATIVE_PATH = "database/data/sample.db"
 """Relative path to the SQLite database file."""
 
-DB_PATH = ABSOLUTE_PATH if ABSOLUTE_PATH else os.path.join(ROOT_PATH, RELATIVE_PATH)
+def _resolve_db_path() -> str:
+    """Resolve DB path from env var or repository-relative default."""
+    if ABSOLUTE_PATH:
+        expanded = Path(ABSOLUTE_PATH).expanduser()
+        return str(expanded if expanded.is_absolute() else PROJECT_ROOT / expanded)
+
+    return str(PROJECT_ROOT / RELATIVE_PATH)
+
+
+DB_PATH = _resolve_db_path()
 """Final database path, prioritizing absolute env var over relative path."""
+
+FALLBACK_DB_PATH = str(PROJECT_ROOT / RELATIVE_PATH)
+"""Project-local fallback DB path used when env path is not writable."""
 
 
 # SINGLETON PATTERN FOR DATABASE CONNECTION
@@ -70,13 +83,29 @@ class DatabaseConnection:
         """
         if not self.__connection:
             try:
+                db_file = Path(self.db_path).expanduser()
+                try:
+                    db_file.parent.mkdir(parents=True, exist_ok=True)
+                except PermissionError:
+                    if str(db_file) != FALLBACK_DB_PATH:
+                        logger.warning(
+                            "Database path '%s' is not writable. Falling back to '%s'.",
+                            self.db_path,
+                            FALLBACK_DB_PATH,
+                        )
+                        self.db_path = FALLBACK_DB_PATH
+                        db_file = Path(self.db_path).expanduser()
+                        db_file.parent.mkdir(parents=True, exist_ok=True)
+                    else:
+                        raise
+
                 # Connect to SQLite; disable thread check for async usage
                 self.__connection = sqlite3.connect(
-                    self.db_path, check_same_thread=False
+                    str(db_file), check_same_thread=False
                 )
                 # Enable dict-like row access
                 self.__connection.row_factory = sqlite3.Row
-                logger.info(f"Connected to SQLite database at '{self.db_path}'.")
+                logger.info(f"Connected to SQLite database at '{db_file}'.")
             except Exception as e:
                 # Log and re-raise connection errors
                 logger.exception(f"Failed to connect to database '{self.db_path}': {e}")

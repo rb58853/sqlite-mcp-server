@@ -2,7 +2,7 @@ from ..db_client.database_conn import DatabaseConnection
 import json
 
 CLIENTS_TABLE_NAME = "clientes"
-QUERY_EXCLUDE_TABLES: list[str] = [CLIENTS_TABLE_NAME]
+QUERY_EXCLUDE_TABLES: list[str] = []
 
 db = DatabaseConnection()
 base_db_context: str = f"""

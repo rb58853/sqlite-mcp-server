@@ -24,6 +24,10 @@ The server hosts tools enabling SELECT-only queries on SQLite databases. It enfo
 
 Deploy a Docker container with the sample database using Docker Compose.
 
+Notes:
+- Docker Compose overrides `DATABASE_ABSOLUTE_PATH` to `/app/database/data/sample.db` so the API and seed script always use the same database inside the container.
+- On container startup, the image runs `python3 database/create_sample_db.py --if-missing` before launching the API, ensuring the sample DB exists.
+
 ``` bash
 docker compose -f docker-compose.yml up -d --build
 ```

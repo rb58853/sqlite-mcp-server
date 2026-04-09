@@ -11,6 +11,8 @@ services:
         - sql-mcp-server
     env_file:
       - .env
+    environment:
+      DATABASE_ABSOLUTE_PATH: /app/database/data/sample.db
     restart: unless-stopped
     ports:
       - 8080:8080
